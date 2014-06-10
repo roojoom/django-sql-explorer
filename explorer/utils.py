@@ -7,6 +7,7 @@ from time import time
 from explorer import app_settings
 from django.db import connections, connection, models, transaction, DatabaseError
 from django.http import HttpResponse
+from utils import unicodecsv
 
 EXPLORER_PARAM_TOKEN = "$$"
 
@@ -116,7 +117,7 @@ def extract_params(text):
 
 def write_csv(headers, data):
     csv_data = cStringIO.StringIO()
-    writer = csv.writer(csv_data)
+    writer = unicodecsv.writer(csv_data)
     writer.writerow(headers)
     map(lambda row: writer.writerow(row), data)
     return csv_data.getvalue()
