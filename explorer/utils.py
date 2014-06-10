@@ -1,3 +1,4 @@
+import codecs
 import functools
 import csv
 import cStringIO
@@ -7,7 +8,6 @@ from time import time
 from explorer import app_settings
 from django.db import connections, connection, models, transaction, DatabaseError
 from django.http import HttpResponse
-from utils import unicodecsv
 
 EXPLORER_PARAM_TOKEN = "$$"
 
@@ -117,7 +117,10 @@ def extract_params(text):
 
 def write_csv(headers, data):
     csv_data = cStringIO.StringIO()
-    writer = unicodecsv.writer(csv_data)
+    codecinfo = codecs.lookup("utf8")
+    wrapper = codecs.StreamReaderWriter(csv_data,
+        codecinfo.streamreader, codecinfo.streamwriter)
+    writer = csv.writer(wrapper)
     writer.writerow(headers)
     map(lambda row: writer.writerow(row), data)
     return csv_data.getvalue()
